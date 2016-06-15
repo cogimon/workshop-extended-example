@@ -88,3 +88,15 @@ coman_right_arm_JointTorqueCtrl.start()
 
 # enable physics simulation again
 gazebo.toggleDynamicsSimulation(true)
+
+import("RttExamples")
+loadComponent("our_component_left_arm", "ExampleLeftArm")
+loadComponent("our_component_right_arm", "ExampleRightArm")
+setActivity("our_component_left_arm",0.05,20,ORO_SCHED_OTHER)
+setActivity("our_component_right_arm",0.05,20,ORO_SCHED_OTHER)
+
+var ConnPolicy cnp
+
+connect("our_component_right_arm.RightArmOutputPort_torque", "coman_right_arm_JointTorqueCtrl.command", cnp)
+connect("our_component_right_arm.RobotFeedbackState", "coman_right_arm_JointTorqueCtrl.feedback", cnp)
+connect("our_component_left_arm.JointPositionOutputPort_left_arm", "coman_left_arm_JointPositionCtrl.command" ,cnp)
