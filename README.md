@@ -8,7 +8,7 @@ git clone https://github.com/cogimon/workshop-extended-example.git
 cd workshop-extended-example
 mkdir build
 cd build
-cmake -DCMAKE_PREFIX_PATH=$your_prefix ..
+cmake -DCMAKE_PREFIX_PATH=/vol/cogimon/cogimon-minimal-nightly ..
 make
 ```
 this should compile and create a package/library like:
