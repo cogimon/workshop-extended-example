@@ -18,4 +18,8 @@ orocos
     └── RttExamples
         └── libRttExamples-gnulinux.so
 ```
+Within the build directory:
+```bash
+export RTT_COMPONENT_PATH=$RTT_COMPONENT_PATH:$(pwd)/orocos
+```
 happy coding!
