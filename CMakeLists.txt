@@ -47,6 +47,8 @@ include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
 orocos_component(${CMAKE_PROJECT_NAME}
                                         ${PROJECT_SOURCE_DIR}/src/SimpleTorqueController.hpp
                                         ${PROJECT_SOURCE_DIR}/src/SimpleTorqueController.cpp
+                                        ${PROJECT_SOURCE_DIR}/src/SimplePositionController.hpp
+                                        ${PROJECT_SOURCE_DIR}/src/SimplePositionController.cpp
                                         ${PROJECT_SOURCE_DIR}/src/Rollout.hpp
                                         ${PROJECT_SOURCE_DIR}/src/Rollout.cpp
 ) # ...you may add multiple source files

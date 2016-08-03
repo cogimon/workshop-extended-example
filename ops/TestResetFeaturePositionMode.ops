@@ -1,0 +1,131 @@
+# load typekits
+import("eigen_typekit")
+import("kdl_typekit")
+import("rst-rt_typekit")
+
+# load transport plugins
+import("rtt_rsbcomm")
+
+# import component libs
+import("rtt_gazebo_embedded") 
+import("rtt-gazebo-robot-sim") 
+import("rtt-core-extensions") 
+
+import("rtt_rsbcomm") 
+require("os")
+
+# instantiate components
+
+# gazebo
+loadComponent("gazebo","RTTGazeboEmbedded")
+setActivity("gazebo",0,10,ORO_SCHED_OTHER)
+gazebo.argv = strings("--verbose") 
+gazebo.add_plugin("/vol/coman/cogimon-minimal-lwr-nightly/lib/orocos/gnulinux/RTTGazeboClockPlugin/libRTTGazeboClockPlugin.so")
+# gazebo.add_plugin("libRTTGazeboClockPlugin.so")
+
+
+# robot sim
+loadComponent("robot_gazebo","cogimon::robotSim")
+setActivity("robot_gazebo",0,11,ORO_SCHED_OTHER)
+
+# Ctrl View
+loadComponent("kukaJA","cogimon::RTTKinematicChainJa")
+setActivity("kukaJA",0.01,12,ORO_SCHED_OTHER)
+
+
+# load simulation related parts (i.e. models)
+
+# actually start the gzserver
+gazebo.configure()
+# start the simulation process
+gazebo.start()
+# disable the dynamics
+gazebo.toggleDynamicsSimulation(false)
+
+# load model (KUKA)
+
+gazebo.spawn_model("robotmodel", "model://kuka-lwr-4plus", 10)
+var int numjoints = 7
+
+# configure robot sim
+# attach previously loaded model
+robot_gazebo.getModel("robotmodel")
+
+# execute the simulation bridge
+robot_gazebo.configure()
+
+# configure kin. chain view
+# position-mode
+kukaJA.addPortRobotside("kukaJA_JointPositionCtrl", numjoints)
+kukaJA.addPortRobotFBside("kukaJA_JointFeedback", numjoints)
+kukaJA.setChainandCtrlName("kukaarm", "JointPositionCtrl")
+
+
+kukaJA.configure()
+
+
+# connect components
+# connect kin. chain ctrl to robot_gazebo
+var ConnPolicy cp
+
+# position-mode
+connect("kukaJA.kukaJA_JointPositionCtrl", "robot_gazebo.kukaarm_JointPositionCtrl", cp)
+connect("robot_gazebo.kukaarm_JointFeedback", "kukaJA.kukaJA_JointFeedback", cp)
+
+# retrieve joint information
+kukaJA.retrieveJointMappings()
+
+# start components
+kukaJA.start()
+
+
+import("ResetWorldExample")
+
+loadComponent("myctrl", "SimplePositionController")
+loadComponent("rollout", "Rollout")
+
+setActivity("myctrl",0.05,20,ORO_SCHED_OTHER)
+setActivity("rollout",0.05,20,ORO_SCHED_OTHER)
+
+myctrl.setDOFsizeAndGains(numjoints, 0.1)
+var rstrt.kinematics.JointAngles desJointAngles = rstrt.kinematics.JointAngles(numjoints)
+desJointAngles.angles[0] = -2.61
+desJointAngles.angles[1] = +0.55
+desJointAngles.angles[2] = -2.81
+desJointAngles.angles[3] = +1.58
+desJointAngles.angles[4] = -0.71
+desJointAngles.angles[5] = -0.05
+desJointAngles.angles[6] = +0.00
+myctrl.setDesiredJointAngles(desJointAngles)
+#myctrl.setGains(0.1)
+
+connectPeers("rollout","gazebo")
+connectPeers("rollout","robot_gazebo")
+connectPeers("rollout","myctrl")
+
+rollout.init()
+var string componentName
+componentName = "myctrl"
+rollout.addAdditionalComponent(componentName)
+
+
+
+# connect output ports to input ports
+connect("kukaJA.feedback", "myctrl.in_robotstatus_port", cp)
+connect("myctrl.out_angles_port", "kukaJA.command", cp)
+
+# run multiple cycles with starting the controller, stopping the controller and resetting the world
+rollout.toggleDynamicsSimulationCaller(true);
+rollout.testMultipleRolloutExecutions(3, false)
+
+# alternatively, do it step by step
+#rollout.configureAdditonalCompoents();
+#rollout.startAdditonalCompoents();
+#rollout.toggleDynamicsSimulationCaller(true);
+#
+#rollout.stopAdditonalCompoents();
+#rollout.toggleDynamicsSimulationCaller(false);
+#rollout.cleanupAdditonalCompoents();
+#
+#rollout.resetWorldCaller();
+

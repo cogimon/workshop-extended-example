@@ -34,7 +34,7 @@ public:
     void cleanupAdditonalCompoents();
     void resetWorldCaller();
     void toggleDynamicsSimulationCaller(bool activate);
-    bool testMultipleRolloutExecutions(unsigned int numRollouts);
+    bool testMultipleRolloutExecutions(unsigned int numRollouts, bool toggleDynamics);
     bool sleeping();
 
 

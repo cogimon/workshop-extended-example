@@ -154,22 +154,26 @@ void Rollout::toggleDynamicsSimulationCaller(bool activate) {
     assert(test == true);
 }
 
-bool Rollout::testMultipleRolloutExecutions(unsigned int numRollouts) {
+bool Rollout::testMultipleRolloutExecutions(unsigned int numRollouts, bool toggleDynamics) {
     if (initialized){
         this->sleeping();
 
         for(unsigned int i=0; i<numRollouts; i++){
             std::cout << "starting... " << i << std::endl;
             this->configureAdditonalCompoents();
+            if (toggleDynamics){
+                this->toggleDynamicsSimulationCaller(true);
+            }
             this->startAdditonalCompoents();
-            this->toggleDynamicsSimulationCaller(true);
             std::cout << "started! " << i << std::endl;
 
             this->sleeping();
 
             std::cout << "stopping... " << i << std::endl;
             this->stopAdditonalCompoents();
-            this->toggleDynamicsSimulationCaller(false);
+            if (toggleDynamics){
+                this->toggleDynamicsSimulationCaller(false);
+            }
             this->cleanupAdditonalCompoents();
             std::cout << "stopped! " << i << std::endl;
 
