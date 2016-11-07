@@ -14,10 +14,10 @@ Rollout::Rollout(std::string const & name) : RTT::TaskContext(name) {
     addOperation("addAdditionalComponent", &Rollout::addAdditionalComponent, this).doc("add additional component");
     addOperation("startRobotGazebo", &Rollout::startRobotGazebo, this, RTT::ClientThread).doc("start robot gazebo");
     addOperation("stopRobotGazebo", &Rollout::stopRobotGazebo, this, RTT::ClientThread).doc("stop robot gazebo");
-    addOperation("configureAdditonalCompoents", &Rollout::configureAdditonalCompoents, this, RTT::ClientThread).doc("configure additonal compoents");
-    addOperation("startAdditonalCompoents", &Rollout::startAdditonalCompoents, this, RTT::ClientThread).doc("start additonal compoents");
-    addOperation("stopAdditonalCompoents", &Rollout::stopAdditonalCompoents, this, RTT::ClientThread).doc("stop additonal compoents");
-    addOperation("cleanupAdditonalCompoents", &Rollout::cleanupAdditonalCompoents, this, RTT::ClientThread).doc("cleanup additonal compoents");
+    addOperation("configureAdditonalComponents", &Rollout::configureAdditonalComponents, this, RTT::ClientThread).doc("configure additonal Components");
+    addOperation("startAdditonalComponents", &Rollout::startAdditonalComponents, this, RTT::ClientThread).doc("start additonal Components");
+    addOperation("stopAdditonalComponents", &Rollout::stopAdditonalComponents, this, RTT::ClientThread).doc("stop additonal Components");
+    addOperation("cleanupAdditonalComponents", &Rollout::cleanupAdditonalComponents, this, RTT::ClientThread).doc("cleanup additonal Components");
     addOperation("resetWorldCaller", &Rollout::resetWorldCaller, this, RTT::ClientThread).doc("call gazebo reset_world()");
     addOperation("toggleDynamicsSimulationCaller", &Rollout::toggleDynamicsSimulationCaller, this, RTT::ClientThread).doc("call gazebo toggleDynamicsSimulation()");
     addOperation("testMultipleRolloutExecutions", &Rollout::testMultipleRolloutExecutions, this, RTT::ClientThread).doc("test multiple rollout executions");
@@ -108,7 +108,7 @@ void Rollout::stopRobotGazebo() {
 //    std::cout << "### result " << test << std::endl;
 }
 
-void Rollout::configureAdditonalCompoents() {
+void Rollout::configureAdditonalComponents() {
     for(unsigned int i=0; i<additonalComponent_task_ptrs.size(); i++){
 //        std::cout << "### configure " << i << " -> " << additonalComponent_names[i] << std::endl;
         test = additonalComponent_task_ptrs[i]->configure();
@@ -116,7 +116,7 @@ void Rollout::configureAdditonalCompoents() {
     }
 }
 
-void Rollout::startAdditonalCompoents() {
+void Rollout::startAdditonalComponents() {
     for(unsigned int i=0; i<additonalComponent_task_ptrs.size(); i++){
 //        std::cout << "### start " << i << " -> " << additonalComponent_names[i] << std::endl;
         test = additonalComponent_task_ptrs[i]->start();
@@ -124,7 +124,7 @@ void Rollout::startAdditonalCompoents() {
     }
 }
 
-void Rollout::stopAdditonalCompoents() {
+void Rollout::stopAdditonalComponents() {
     for(unsigned int i=0; i<additonalComponent_task_ptrs.size(); i++){
 //        std::cout << "### stop " << i << " -> " << additonalComponent_names[i] << std::endl;
         additonalComponent_task_ptrs[i]->stop();
@@ -132,7 +132,7 @@ void Rollout::stopAdditonalCompoents() {
     }
 }
 
-void Rollout::cleanupAdditonalCompoents() {
+void Rollout::cleanupAdditonalComponents() {
     for(unsigned int i=0; i<additonalComponent_task_ptrs.size(); i++){
 //        std::cout << "### cleanup " << i << " -> " << additonalComponent_names[i] << std::endl;
         additonalComponent_task_ptrs[i]->cleanup();
@@ -160,21 +160,21 @@ bool Rollout::testMultipleRolloutExecutions(unsigned int numRollouts, bool toggl
 
         for(unsigned int i=0; i<numRollouts; i++){
             std::cout << "starting... " << i << std::endl;
-            this->configureAdditonalCompoents();
+            this->configureAdditonalComponents();
             if (toggleDynamics){
                 this->toggleDynamicsSimulationCaller(true);
             }
-            this->startAdditonalCompoents();
+            this->startAdditonalComponents();
             std::cout << "started! " << i << std::endl;
 
             this->sleeping();
 
             std::cout << "stopping... " << i << std::endl;
-            this->stopAdditonalCompoents();
+            this->stopAdditonalComponents();
             if (toggleDynamics){
                 this->toggleDynamicsSimulationCaller(false);
             }
-            this->cleanupAdditonalCompoents();
+            this->cleanupAdditonalComponents();
             std::cout << "stopped! " << i << std::endl;
 
             std::cout << "resetting... " << i << std::endl;

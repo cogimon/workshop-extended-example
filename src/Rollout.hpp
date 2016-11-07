@@ -28,10 +28,10 @@ public:
     bool addAdditionalComponent(std::string & componentName);
     void startRobotGazebo();
     void stopRobotGazebo();
-    void configureAdditonalCompoents();
-    void startAdditonalCompoents();
-    void stopAdditonalCompoents();
-    void cleanupAdditonalCompoents();
+    void configureAdditonalComponents();
+    void startAdditonalComponents();
+    void stopAdditonalComponents();
+    void cleanupAdditonalComponents();
     void resetWorldCaller();
     void toggleDynamicsSimulationCaller(bool activate);
     bool testMultipleRolloutExecutions(unsigned int numRollouts, bool toggleDynamics);

@@ -4,12 +4,12 @@ import("kdl_typekit")
 import("rst-rt_typekit")
 
 # load transport plugins
-import("rtt_rsbcomm")
+#import("rtt_rsbcomm")
 
 # import component libs
 import("rtt_gazebo_embedded") 
 import("rtt-gazebo-robot-sim") 
-import("rtt-core-extensions") 
+#import("rtt-core-extensions") 
 
 import("rtt_rsbcomm") 
 require("os")
@@ -51,32 +51,16 @@ var int numjoints = 7
 # attach previously loaded model
 robot_gazebo.getModel("robotmodel")
 
+var string path_model_urdf = os.getenv("GAZEBO_MODEL_PATH")+"/kuka-lwr-4plus/model.urdf"
+var string path_model_srdf = os.getenv("GAZEBO_MODEL_PATH")+"/kuka-lwr-4plus/model.srdf"
+robot_gazebo.loadURDFAndSRDF(path_model_urdf, path_model_srdf)
+
 # execute the simulation bridge
 robot_gazebo.configure()
 
 # configure kin. chain view
 # position-mode
-kukaJA.addPortRobotside("kukaJA_JointPositionCtrl", numjoints)
-kukaJA.addPortRobotFBside("kukaJA_JointFeedback", numjoints)
-kukaJA.setChainandCtrlName("kukaarm", "JointPositionCtrl")
-
-
-kukaJA.configure()
-
-
-# connect components
-# connect kin. chain ctrl to robot_gazebo
-var ConnPolicy cp
-
-# position-mode
-connect("kukaJA.kukaJA_JointPositionCtrl", "robot_gazebo.kukaarm_JointPositionCtrl", cp)
-connect("robot_gazebo.kukaarm_JointFeedback", "kukaJA.kukaJA_JointFeedback", cp)
-
-# retrieve joint information
-kukaJA.retrieveJointMappings()
-
-# start components
-kukaJA.start()
+robot_gazebo.setControlMode("full_arm", "JointPositionCtrl")
 
 
 import("ResetWorldExample")
@@ -111,8 +95,9 @@ rollout.addAdditionalComponent(componentName)
 
 
 # connect output ports to input ports
-connect("kukaJA.feedback", "myctrl.in_robotstatus_port", cp)
-connect("myctrl.out_angles_port", "kukaJA.command", cp)
+var ConnPolicy cp
+connect("robot_gazebo.full_arm_JointFeedback", "myctrl.in_robotstatus_port", cp)
+connect("myctrl.out_angles_port", "robot_gazebo.full_arm_JointPositionCtrl", cp)
 
 # run multiple cycles with starting the controller, stopping the controller and resetting the world
 rollout.toggleDynamicsSimulationCaller(true);
