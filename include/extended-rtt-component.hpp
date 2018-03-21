@@ -42,6 +42,9 @@ private:
     // operations:
     // are class methods that can be called from deployer
 
+    // properties:
+    RTT::Attribute<int> exampleAttribute;
+
 };
 
 #endif // SIMPLERTTCOMPONENT_HPP

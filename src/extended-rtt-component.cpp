@@ -10,9 +10,10 @@
 #include <rtt/Component.hpp>
 
 
-ExampleRightArm::ExampleRightArm(std::string const & name) : RTT::TaskContext(name) {
+ExampleRightArm::ExampleRightArm(std::string const & name) : RTT::TaskContext(name), exampleAttribute("exampleAttribute",42) {
     // constructor:
-
+    // bind attribute
+    this->attributes()->addAttribute( exampleAttribute );
 }
 
 bool ExampleRightArm::configureHook() {
